@@ -1,4 +1,4 @@
-package category
+package models
 
 import "time"
 
@@ -11,5 +11,5 @@ type Category struct {
 }
 
 func (Category) TableName() string {
-	return "category"
+	return "categories"
 }

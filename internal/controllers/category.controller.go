@@ -1,19 +1,20 @@
-package category
+package controllers
 
 import (
 	"go-learning/internal/database"
 	"go-learning/internal/helpers"
+	"go-learning/internal/services"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-type Handler struct {
-	service  Service
+type CategoryController struct {
+	service  services.CateogyService
 	response *helpers.Response
 }
 
-func NewHandler(service Service, response *helpers.Response) *Handler {
-	return &Handler{
+func NewCategoryController(service services.CateogyService, response *helpers.Response) *CategoryController {
+	return &CategoryController{
 		service:  service,
 		response: response,
 	}
@@ -25,7 +26,7 @@ Method: POST
 URL Path: /v1/categories
 ===========================================================================================
 */
-func (h *Handler) CreateCategory(c *fiber.Ctx) error {
+func (h *CategoryController) CreateCategory(c *fiber.Ctx) error {
 	db := database.GetDB()
 
 	// ambil body

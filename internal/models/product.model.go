@@ -1,4 +1,4 @@
-package product
+package models
 
 import "time"
 
@@ -12,5 +12,5 @@ type Product struct {
 }
 
 func (Product) TableName() string {
-	return "product"
+	return "products"
 }

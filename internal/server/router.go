@@ -1,9 +1,10 @@
 package server
 
 import (
-	"go-learning/internal/domain/category"
-	"go-learning/internal/domain/product"
+	"go-learning/internal/controllers"
 	"go-learning/internal/helpers"
+	"go-learning/internal/repositories"
+	"go-learning/internal/services"
 	"go-learning/internal/storage"
 
 	"github.com/gofiber/fiber/v2"
@@ -15,14 +16,14 @@ func SetupRoutes(app *fiber.App) {
 	minioClient := storage.NewMinioClient()
 
 	// category
-	categoryRepo := category.NewRepository()
-	categoryService := category.NewService(categoryRepo, minioClient)
-	categoryHandler := category.NewHandler(categoryService, response)
+	categoryRepo := repositories.NewCategoryRepository()
+	categoryService := services.NewCategoryService(categoryRepo, minioClient)
+	categoryHandler := controllers.NewCategoryController(categoryService, response)
 
 	// product
-	productRepo := product.NewRepository()
-	productService := product.NewService(productRepo)
-	productHandler := product.NewHandler(productService, response)
+	productRepo := repositories.NewProductRepository()
+	productService := services.NewProductService(productRepo)
+	productHandler := controllers.NewProductController(productService, response)
 
 	// welcome route
 	app.Get("/", WelcomeHandler)

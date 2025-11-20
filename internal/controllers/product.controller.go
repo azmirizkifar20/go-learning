@@ -1,21 +1,23 @@
-package product
+package controllers
 
 import (
 	"strconv"
 
 	"go-learning/internal/database"
 	"go-learning/internal/helpers"
+	"go-learning/internal/models"
+	"go-learning/internal/services"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-type Handler struct {
-	service  Service
+type ProductController struct {
+	service  services.ProductService
 	response *helpers.Response
 }
 
-func NewHandler(service Service, response *helpers.Response) *Handler {
-	return &Handler{
+func NewProductController(service services.ProductService, response *helpers.Response) *ProductController {
+	return &ProductController{
 		service:  service,
 		response: response,
 	}
@@ -27,11 +29,11 @@ Method: POST
 URL Path: /v1/products
 ===========================================================================================
 */
-func (h *Handler) CreateProduct(c *fiber.Ctx) error {
+func (h *ProductController) CreateProduct(c *fiber.Ctx) error {
 	db := database.GetDB()
 
 	// get body
-	var req Product
+	var req models.Product
 	if err := c.BodyParser(&req); err != nil {
 		return h.response.Send(c, fiber.StatusBadRequest, nil, "Invalid body", err.Error())
 	}
@@ -51,7 +53,7 @@ Method: GET
 URL Path: /v1/products
 ===========================================================================================
 */
-func (h *Handler) ListProduct(c *fiber.Ctx) error {
+func (h *ProductController) ListProduct(c *fiber.Ctx) error {
 	db := database.GetDB()
 	products, err := h.service.List(db)
 	if err != nil {
@@ -67,7 +69,7 @@ Method: GET
 URL Path: /v1/products/:id
 ===========================================================================================
 */
-func (h *Handler) GetProduct(c *fiber.Ctx) error {
+func (h *ProductController) GetProduct(c *fiber.Ctx) error {
 	db := database.GetDB()
 	idStr := c.Params("id")
 	id, _ := strconv.Atoi(idStr)
@@ -86,7 +88,7 @@ Method: PUT
 URL Path: /v1/products/:id
 ===========================================================================================
 */
-func (h *Handler) UpdateProduct(c *fiber.Ctx) error {
+func (h *ProductController) UpdateProduct(c *fiber.Ctx) error {
 	db := database.GetDB()
 
 	// get params id
@@ -94,7 +96,7 @@ func (h *Handler) UpdateProduct(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(idStr)
 
 	// get body
-	var req Product
+	var req models.Product
 	if err := c.BodyParser(&req); err != nil {
 		return h.response.Send(c, fiber.StatusBadRequest, nil, "Invalid body!", err.Error())
 	}
@@ -119,7 +121,7 @@ Method: DELETE
 URL Path: /v1/products/:id
 ===========================================================================================
 */
-func (h *Handler) DeleteProduct(c *fiber.Ctx) error {
+func (h *ProductController) DeleteProduct(c *fiber.Ctx) error {
 	db := database.GetDB()
 
 	// get params id
