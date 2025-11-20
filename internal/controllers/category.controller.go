@@ -32,7 +32,7 @@ func (h *CategoryController) CreateCategory(c *fiber.Ctx) error {
 	// ambil body
 	name := c.FormValue("category_name")
 	if name == "" {
-		return h.response.Send(c, fiber.StatusBadRequest, nil, "Name is required", nil)
+		return h.response.Send(c, fiber.StatusBadRequest, nil, "category_name is required", nil)
 	}
 
 	// ambil file image

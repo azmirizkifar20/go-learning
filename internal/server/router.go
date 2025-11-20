@@ -43,4 +43,7 @@ func SetupRoutes(app *fiber.App) {
 	productGroup.Post("/", productHandler.CreateProduct)
 	productGroup.Put("/:id", productHandler.UpdateProduct)
 	productGroup.Delete("/:id", productHandler.DeleteProduct)
+
+	// not found handling
+	app.Use(NotFoundHandler)
 }
