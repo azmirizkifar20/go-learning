@@ -7,12 +7,36 @@ import (
 	"go-learning/internal/services"
 	"go-learning/internal/storage"
 
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
 func SetupRoutes(app *fiber.App) {
-	// init infra yang dibutuhkan handler
+	// init response
 	response := helpers.NewResponse()
+
+	// GLOBAL RATE LIMITER
+	app.Use(limiter.New(limiter.Config{
+		Max:        60,              // max 60 request
+		Expiration: 1 * time.Minute, // per 1 menit per key
+		// Key per user (di sini per IP)
+		KeyGenerator: func(c *fiber.Ctx) string {
+			return c.IP()
+		},
+		// custom response saat kena limit
+		LimitReached: func(c *fiber.Ctx) error {
+			return response.Send(
+				c,
+				fiber.StatusTooManyRequests,
+				nil,
+				"Too many requests, please try again later",
+				"rate_limit_exceeded",
+			)
+		},
+	}))
+
 	minioClient := storage.NewMinioClient()
 
 	// category
