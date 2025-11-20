@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"go-learning/internal/database"
+	"go-learning/internal/dtos"
 	"go-learning/internal/helpers"
 	"go-learning/internal/models"
 	"go-learning/internal/services"
@@ -33,13 +34,27 @@ func (h *ProductController) CreateProduct(c *fiber.Ctx) error {
 	db := database.GetDB()
 
 	// get body
-	var req models.Product
+	// var req models.Product
+	var req dtos.CreateProductRequest // ambil dari DTO
 	if err := c.BodyParser(&req); err != nil {
 		return h.response.Send(c, fiber.StatusBadRequest, nil, "Invalid body", err.Error())
 	}
 
+	// validasi body pakai validator
+	if err := helpers.Validate.Struct(req); err != nil {
+		formatted := helpers.FormatValidationError(err)
+		return h.response.Send(c, fiber.StatusBadRequest, nil, "Validation failed", formatted)
+	}
+
+	// mapping DTO ke model
+	product := models.Product{
+		ProductName: req.ProductName,
+		CategoryID:  req.CategoryID,
+		Price:       req.Price,
+	}
+
 	// create product
-	p, err := h.service.Create(db, &req)
+	p, err := h.service.Create(db, &product)
 	if err != nil {
 		return h.response.Send(c, fiber.StatusInternalServerError, nil, "Internal server error", err.Error())
 	}
