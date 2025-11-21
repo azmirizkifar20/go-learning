@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"context"
+
 	"gorm.io/gorm"
 
 	"go-learning/internal/models"
@@ -14,6 +16,6 @@ func NewCategoryRepository(db *gorm.DB) *CategoryRepository {
 	return &CategoryRepository{db}
 }
 
-func (r *CategoryRepository) Create(category *models.Category) error {
-	return r.db.Create(category).Error
+func (r *CategoryRepository) Create(ctx context.Context, category *models.Category) error {
+	return r.db.WithContext(ctx).Create(category).Error
 }

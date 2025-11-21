@@ -43,7 +43,7 @@ func (h *CategoryController) CreateCategory(c *fiber.Ctx) error {
 		file = nil
 	}
 
-	category, err := h.service.CreateCategory(name, file)
+	category, err := h.service.CreateCategory(c.Context(), name, file)
 	if err != nil {
 		return h.response.Send(c, fiber.StatusInternalServerError, nil, "Interval server error", err.Error())
 	}

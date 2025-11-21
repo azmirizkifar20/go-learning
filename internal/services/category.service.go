@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"mime/multipart"
 
 	"go-learning/internal/models"
@@ -20,7 +21,7 @@ func NewCategoryService(repo *repositories.CategoryRepository, minio *storage.Mi
 	}
 }
 
-func (s *CategoryService) CreateCategory(name string, imageFile *multipart.FileHeader) (*models.Category, error) {
+func (s *CategoryService) CreateCategory(ctx context.Context, name string, imageFile *multipart.FileHeader) (*models.Category, error) {
 	imageURL := ""
 	var err error
 
@@ -36,7 +37,7 @@ func (s *CategoryService) CreateCategory(name string, imageFile *multipart.FileH
 		ImageURL:     imageURL,
 	}
 
-	if err := s.repo.Create(category); err != nil {
+	if err := s.repo.Create(ctx, category); err != nil {
 		return nil, err
 	}
 
