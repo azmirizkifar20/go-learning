@@ -6,16 +6,14 @@ import (
 	"go-learning/internal/models"
 )
 
-type CategoryRepository interface {
-	Create(db *gorm.DB, category *models.Category) error
+type CategoryRepository struct {
+	db *gorm.DB
 }
 
-type repository struct{}
-
-func NewCategoryRepository() CategoryRepository {
-	return &repository{}
+func NewCategoryRepository(db *gorm.DB) *CategoryRepository {
+	return &CategoryRepository{db}
 }
 
-func (r *repository) Create(db *gorm.DB, category *models.Category) error {
-	return db.Create(category).Error
+func (r *CategoryRepository) Create(category *models.Category) error {
+	return r.db.Create(category).Error
 }

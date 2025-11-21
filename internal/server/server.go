@@ -5,6 +5,8 @@ import (
 	"go-learning/internal/routes"
 	"time"
 
+	"go-learning/internal/database"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
@@ -35,7 +37,8 @@ func NewServer() *fiber.App {
 	app.Get("/", WelcomeHandler)
 
 	// init dependencies
-	deps := routes.NewDependencies()
+	db := database.GetDB()
+	deps := routes.NewDependencies(db)
 
 	// setup routes
 	routes.SetupRoutes(app, deps)

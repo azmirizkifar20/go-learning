@@ -6,27 +6,21 @@ import (
 	"go-learning/internal/models"
 	"go-learning/internal/repositories"
 	"go-learning/internal/storage"
-
-	"gorm.io/gorm"
 )
 
-type CateogyService interface {
-	CreateCategory(db *gorm.DB, name string, imageFile *multipart.FileHeader) (*models.Category, error)
-}
-
-type categoryService struct {
-	repo  repositories.CategoryRepository
+type CategoryService struct {
+	repo  *repositories.CategoryRepository
 	minio *storage.MinioClient
 }
 
-func NewCategoryService(repo repositories.CategoryRepository, minio *storage.MinioClient) CateogyService {
-	return &categoryService{
+func NewCategoryService(repo *repositories.CategoryRepository, minio *storage.MinioClient) *CategoryService {
+	return &CategoryService{
 		repo,
 		minio,
 	}
 }
 
-func (s *categoryService) CreateCategory(db *gorm.DB, name string, imageFile *multipart.FileHeader) (*models.Category, error) {
+func (s *CategoryService) CreateCategory(name string, imageFile *multipart.FileHeader) (*models.Category, error) {
 	imageURL := ""
 	var err error
 
@@ -42,7 +36,7 @@ func (s *categoryService) CreateCategory(db *gorm.DB, name string, imageFile *mu
 		ImageURL:     imageURL,
 	}
 
-	if err := s.repo.Create(db, category); err != nil {
+	if err := s.repo.Create(category); err != nil {
 		return nil, err
 	}
 

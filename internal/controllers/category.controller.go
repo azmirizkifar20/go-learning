@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"go-learning/internal/database"
 	"go-learning/internal/helpers"
 	"go-learning/internal/services"
 
@@ -9,11 +8,11 @@ import (
 )
 
 type CategoryController struct {
-	service  services.CateogyService
+	service  *services.CategoryService
 	response *helpers.Response
 }
 
-func NewCategoryController(service services.CateogyService, response *helpers.Response) *CategoryController {
+func NewCategoryController(service *services.CategoryService, response *helpers.Response) *CategoryController {
 	return &CategoryController{
 		service:  service,
 		response: response,
@@ -27,7 +26,6 @@ URL Path: /v1/categories
 ===========================================================================================
 */
 func (h *CategoryController) CreateCategory(c *fiber.Ctx) error {
-	db := database.GetDB()
 
 	// ambil body
 	name := c.FormValue("category_name")
@@ -45,7 +43,7 @@ func (h *CategoryController) CreateCategory(c *fiber.Ctx) error {
 		file = nil
 	}
 
-	category, err := h.service.CreateCategory(db, name, file)
+	category, err := h.service.CreateCategory(name, file)
 	if err != nil {
 		return h.response.Send(c, fiber.StatusInternalServerError, nil, "Interval server error", err.Error())
 	}

@@ -6,6 +6,8 @@ import (
 	"go-learning/internal/repositories"
 	"go-learning/internal/services"
 	"go-learning/internal/storage"
+
+	"gorm.io/gorm"
 )
 
 type Dependencies struct {
@@ -15,12 +17,12 @@ type Dependencies struct {
 	ProductController  *controllers.ProductController
 }
 
-func NewDependencies() *Dependencies {
+func NewDependencies(db *gorm.DB) *Dependencies {
 	response := helpers.NewResponse()
 	minioClient := storage.NewMinioClient()
 
 	// Category deps
-	categoryRepo := repositories.NewCategoryRepository()
+	categoryRepo := repositories.NewCategoryRepository(db)
 	categoryService := services.NewCategoryService(categoryRepo, minioClient)
 	categoryController := controllers.NewCategoryController(categoryService, response)
 
