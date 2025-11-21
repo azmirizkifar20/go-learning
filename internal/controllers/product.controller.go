@@ -51,12 +51,12 @@ func (h *ProductController) CreateProduct(c *fiber.Ctx) error {
 	}
 
 	// create product
-	p, err := h.service.Create(&product)
+	p, err := h.service.Create(c.Context(), &product)
 	if err != nil {
 		return h.response.Send(c, fiber.StatusInternalServerError, nil, "Internal server error", err.Error())
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(p)
+	return h.response.Send(c, fiber.StatusOK, p, "Berhasil membuat product", nil)
 }
 
 /*
@@ -66,7 +66,7 @@ URL Path: /v1/products
 ===========================================================================================
 */
 func (h *ProductController) ListProduct(c *fiber.Ctx) error {
-	products, err := h.service.List()
+	products, err := h.service.List(c.Context())
 	if err != nil {
 		return h.response.Send(c, fiber.StatusInternalServerError, nil, "Internal server error", err.Error())
 	}
@@ -84,7 +84,7 @@ func (h *ProductController) GetProduct(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, _ := strconv.Atoi(idStr)
 
-	product, err := h.service.Get(uint(id))
+	product, err := h.service.Get(c.Context(), uint(id))
 	if err != nil {
 		return h.response.Send(c, fiber.StatusNotFound, nil, "product not found", err.Error())
 	}
@@ -109,13 +109,13 @@ func (h *ProductController) UpdateProduct(c *fiber.Ctx) error {
 		return h.response.Send(c, fiber.StatusBadRequest, nil, "Invalid body!", err.Error())
 	}
 
-	_, err := h.service.Get(uint(id))
+	_, err := h.service.Get(c.Context(), uint(id))
 	if err != nil {
 		return h.response.Send(c, fiber.StatusNotFound, nil, "product not found", err.Error())
 	}
 
 	// update the product
-	product, err := h.service.Update(uint(id), &req)
+	product, err := h.service.Update(c.Context(), uint(id), &req)
 	if err != nil {
 		return h.response.Send(c, fiber.StatusInternalServerError, nil, "Internal server error", err.Error())
 	}
@@ -134,7 +134,7 @@ func (h *ProductController) DeleteProduct(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, _ := strconv.Atoi(idStr)
 
-	err := h.service.Delete(uint(id))
+	err := h.service.Delete(c.Context(), uint(id))
 	if err != nil {
 		return h.response.Send(c, fiber.StatusInternalServerError, nil, "Failed delete data", err.Error())
 	}
