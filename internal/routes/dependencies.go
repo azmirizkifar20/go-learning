@@ -27,7 +27,7 @@ func NewDependencies(db *gorm.DB) *Dependencies {
 	categoryController := controllers.NewCategoryController(categoryService, response)
 
 	// Product deps
-	productRepo := repositories.NewProductRepository()
+	productRepo := repositories.NewProductRepository(db)
 	productService := services.NewProductService(productRepo)
 	productController := controllers.NewProductController(productService, response)
 

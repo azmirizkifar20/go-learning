@@ -3,7 +3,6 @@ package controllers
 import (
 	"strconv"
 
-	"go-learning/internal/database"
 	"go-learning/internal/dtos"
 	"go-learning/internal/helpers"
 	"go-learning/internal/models"
@@ -13,11 +12,11 @@ import (
 )
 
 type ProductController struct {
-	service  services.ProductService
+	service  *services.Productservice
 	response *helpers.Response
 }
 
-func NewProductController(service services.ProductService, response *helpers.Response) *ProductController {
+func NewProductController(service *services.Productservice, response *helpers.Response) *ProductController {
 	return &ProductController{
 		service:  service,
 		response: response,
@@ -31,8 +30,6 @@ URL Path: /v1/products
 ===========================================================================================
 */
 func (h *ProductController) CreateProduct(c *fiber.Ctx) error {
-	db := database.GetDB()
-
 	// get body
 	// var req models.Product
 	var req dtos.CreateProductRequest // ambil dari DTO
@@ -54,7 +51,7 @@ func (h *ProductController) CreateProduct(c *fiber.Ctx) error {
 	}
 
 	// create product
-	p, err := h.service.Create(db, &product)
+	p, err := h.service.Create(&product)
 	if err != nil {
 		return h.response.Send(c, fiber.StatusInternalServerError, nil, "Internal server error", err.Error())
 	}
@@ -69,8 +66,7 @@ URL Path: /v1/products
 ===========================================================================================
 */
 func (h *ProductController) ListProduct(c *fiber.Ctx) error {
-	db := database.GetDB()
-	products, err := h.service.List(db)
+	products, err := h.service.List()
 	if err != nil {
 		return h.response.Send(c, fiber.StatusInternalServerError, nil, "Internal server error", err.Error())
 	}
@@ -85,11 +81,10 @@ URL Path: /v1/products/:id
 ===========================================================================================
 */
 func (h *ProductController) GetProduct(c *fiber.Ctx) error {
-	db := database.GetDB()
 	idStr := c.Params("id")
 	id, _ := strconv.Atoi(idStr)
 
-	product, err := h.service.Get(db, uint(id))
+	product, err := h.service.Get(uint(id))
 	if err != nil {
 		return h.response.Send(c, fiber.StatusNotFound, nil, "product not found", err.Error())
 	}
@@ -104,8 +99,6 @@ URL Path: /v1/products/:id
 ===========================================================================================
 */
 func (h *ProductController) UpdateProduct(c *fiber.Ctx) error {
-	db := database.GetDB()
-
 	// get params id
 	idStr := c.Params("id")
 	id, _ := strconv.Atoi(idStr)
@@ -116,13 +109,13 @@ func (h *ProductController) UpdateProduct(c *fiber.Ctx) error {
 		return h.response.Send(c, fiber.StatusBadRequest, nil, "Invalid body!", err.Error())
 	}
 
-	_, err := h.service.Get(db, uint(id))
+	_, err := h.service.Get(uint(id))
 	if err != nil {
 		return h.response.Send(c, fiber.StatusNotFound, nil, "product not found", err.Error())
 	}
 
 	// update the product
-	product, err := h.service.Update(db, uint(id), &req)
+	product, err := h.service.Update(uint(id), &req)
 	if err != nil {
 		return h.response.Send(c, fiber.StatusInternalServerError, nil, "Internal server error", err.Error())
 	}
@@ -137,13 +130,11 @@ URL Path: /v1/products/:id
 ===========================================================================================
 */
 func (h *ProductController) DeleteProduct(c *fiber.Ctx) error {
-	db := database.GetDB()
-
 	// get params id
 	idStr := c.Params("id")
 	id, _ := strconv.Atoi(idStr)
 
-	err := h.service.Delete(db, uint(id))
+	err := h.service.Delete(uint(id))
 	if err != nil {
 		return h.response.Send(c, fiber.StatusInternalServerError, nil, "Failed delete data", err.Error())
 	}
